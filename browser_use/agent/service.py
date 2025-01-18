@@ -25,6 +25,8 @@ from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel, ValidationError
 
 from browser_use.agent.message_manager.service import MessageManager
+from browser_use.agent.planning_manager.service import PlanningManager
+from browser_use.agent.planning_manager.views import TaskPlan
 from browser_use.agent.prompts import AgentMessagePrompt, SystemPrompt
 from browser_use.agent.views import (
 	ActionResult,
@@ -157,6 +159,9 @@ class Agent:
 
 		if save_conversation_path:
 			logger.info(f'Saving conversation to {save_conversation_path}')
+
+		self.planning_manager = PlanningManager(llm=self.llm)
+		self.task_plan: Optional[TaskPlan] = None
 
 	def _setup_action_models(self) -> None:
 		"""Setup dynamic action models from controller's registry"""
@@ -392,10 +397,32 @@ class Agent:
 			)
 		)
 
+	async def _plan_task(self) -> None:
+		"""Plan the task using PlanningManager"""
+		try:
+			self.task_plan = await self.planning_manager.plan_task(self.task)
+			logger.info("📋 Task Plan:")
+			logger.info(f"🎯 Reformulated task: {self.task_plan.task}")
+			logger.info(f"📝 Summary: {self.task_plan.short_summary}")
+			logger.info(f"🏷️ Tags: {', '.join(self.task_plan.tags)}")
+			logger.info(f"📊 Difficulty: {self.task_plan.estimated_difficulty}/10")
+		except Exception as e:
+			logger.warning(f"Failed to plan task: {str(e)}")
+			logger.warning("Continuing with original task")
+
 	async def run(self, max_steps: int = 100) -> AgentHistoryList:
 		"""Execute the task with maximum number of steps"""
 		try:
 			self._log_agent_run()
+			
+			# Add planning step
+			await self._plan_task()
+			
+			# If planning was successful, use the reformulated task
+			if self.task_plan:
+				self.task = self.task_plan.task
+				# Update message manager with reformulated task
+				self.message_manager.task = self.task_plan.task
 
 			for step in range(max_steps):
 				if self._too_many_failures():
