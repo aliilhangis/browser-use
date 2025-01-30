@@ -126,6 +126,7 @@ def setup_logging():
 		'PIL.PngImagePlugin',
 		'trafilatura.htmlprocessing',
 		'trafilatura',
+		'groq',
 	]:
 		third_party = logging.getLogger(logger)
 		third_party.setLevel(logging.ERROR)

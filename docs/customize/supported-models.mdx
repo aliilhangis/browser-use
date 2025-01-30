@@ -212,8 +212,37 @@ agent = Agent(
 
 Required environment variables: None!
 
+### Groq
+
+"[Groq](groq.com) offers lightning-fast inference for various open-source models that are hosted on GroqCloud via Groq API. Here's how to use Groq API with LangChain to leverage fast inference for your realtime apps:"
+
+```python
+from langchain_groq import ChatGroq
+from browser_use import Agent
+from pydantic import SecretStr
+
+# Initialize the model
+llm = ChatGroq(
+    model="deepseek-r1-distill-llama-70b",
+    api_key=SecretStr(api_key),
+    temperature=0.0
+)
+
+# Create agent with the model
+agent = Agent(
+    task="Your task here",
+    llm=llm,
+    use_vision=False
+)
+```
+
+Required environment variables:
+
+```bash .env
+GROQ_API_KEY=
+```
+
 ## Coming soon
 (We are working on it)
-- Groq
 - Github
 - Fine-tuned models

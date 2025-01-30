@@ -353,7 +353,7 @@ class Agent:
 	async def get_next_action(self, input_messages: list[BaseMessage]) -> AgentOutput:
 		"""Get next action from LLM based on current state"""
 
-		if self.model_name == 'deepseek-reasoner':
+		if self.model_name == 'deepseek-reasoner' or self.tool_calling_method == 'no_structured_output':
 			converted_input_messages = self.message_manager.convert_messages_for_non_function_calling_models(input_messages)
 			merged_input_messages = self.message_manager.merge_successive_human_messages(converted_input_messages)
 			output = self.llm.invoke(merged_input_messages)
@@ -595,7 +595,7 @@ class Agent:
 		# Execute initial actions if provided
 		if self.initial_actions:
 			await self.controller.multi_act(self.initial_actions, self.browser_context, check_for_new_elements=False)
-		
+
 		results = []
 
 		for i, history_item in enumerate(history.history):
