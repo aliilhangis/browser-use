@@ -9,6 +9,7 @@ from browser_use.dom.views import (
 	DOMElementNode,
 	DOMState,
 	DOMTextNode,
+	Position,
 	SelectorMap,
 )
 
@@ -87,6 +88,14 @@ class DomService:
 
 		tag_name = node_data['tagName']
 
+		position_data = node_data.get('position', {})
+		position = Position(
+            top=position_data.get('top', 0),
+            left=position_data.get('left', 0),
+            width=position_data.get('width', 0),
+            height=position_data.get('height', 0)
+        )
+		
 		element_node = DOMElementNode(
 			tag_name=tag_name,
 			xpath=node_data['xpath'],
@@ -98,6 +107,7 @@ class DomService:
 			highlight_index=node_data.get('highlightIndex'),
 			shadow_root=node_data.get('shadowRoot', False),
 			parent=parent,
+			position=position
 		)
 
 		children: list[DOMBaseNode] = []

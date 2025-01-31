@@ -45,6 +45,7 @@ from browser_use.dom.history_tree_processor.service import (
 	DOMHistoryElement,
 	HistoryTreeProcessor,
 )
+from browser_use.browser.manager.highlight_manager import HighlightManager
 from browser_use.telemetry.service import ProductTelemetry
 from browser_use.telemetry.views import (
 	AgentEndTelemetryEvent,
@@ -97,6 +98,7 @@ class Agent:
 		register_new_step_callback: Callable[['BrowserState', 'AgentOutput', int], None] | None = None,
 		register_done_callback: Callable[['AgentHistoryList'], None] | None = None,
 		tool_calling_method: Optional[str] = 'auto',
+		gif_highlights_enabled: bool = False,
 	):
 		self.agent_id = str(uuid.uuid4())  # unique identifier for the agent
 
@@ -175,6 +177,9 @@ class Agent:
 
 		self._paused = False
 		self._stopped = False
+		self.gif_highlights_enabled: bool = gif_highlights_enabled
+		self.highlight_manager = HighlightManager()
+
 
 	def _set_version_and_source(self) -> None:
 		try:
@@ -803,7 +808,8 @@ class Agent:
 					margin=margin,
 					logo=logo,
 				)
-
+			if self.gif_highlights_enabled:
+				self.highlight_manager.highlight_element(item.state.interacted_element, image)	
 			images.append(image)
 
 		if images:
