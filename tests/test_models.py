@@ -9,6 +9,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_ollama import ChatOllama
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from pydantic import SecretStr
+from langchain_groq import ChatGroq
 
 from browser_use.agent.service import Agent
 from browser_use.agent.views import ActionResult, AgentHistoryList
@@ -45,6 +46,7 @@ async def context(browser):
 api_key_gemini = SecretStr(os.getenv('GEMINI_API_KEY') or '')
 api_key_deepseek = SecretStr(os.getenv('DEEPSEEK_API_KEY') or '')
 api_key_anthropic = SecretStr(os.getenv('ANTHROPIC_API_KEY') or '')
+api_key_groq = SecretStr(os.getenv('GROQ_API_KEY') or '')
 
 
 # pytest -s -v tests/test_models.py
@@ -89,6 +91,16 @@ api_key_anthropic = SecretStr(os.getenv('ANTHROPIC_API_KEY') or '')
 			model='deepseek-chat',
 			api_key=api_key_deepseek,
 		),
+		ChatGroq(
+			model="llama-3.3-70b-versatile",
+			api_key=api_key_groq,
+			temperature=0.0
+		),
+		ChatGroq(
+			model="deepseek-r1-distill-llama-70b",
+			api_key=api_key_groq,
+			temperature=0.0
+		),
 	],
 	ids=[
 		'deepseek-reasoner',
@@ -102,6 +114,8 @@ api_key_anthropic = SecretStr(os.getenv('ANTHROPIC_API_KEY') or '')
 		'gemini-1.5-pro',
 		'gemini-1.5-flash-latest',
 		'deepseek-chat',
+		'llama-3.3-70b-versatile',
+		'deepseek-r1-distill-llama-70b'
 	],
 )
 async def llm(request):
@@ -115,7 +129,7 @@ async def test_model_search(llm, context):
 	print(f'\nTesting model: {model_name}')
 
 	use_vision = True
-	models_without_vision = ['deepseek-chat', 'deepseek-reasoner']
+	models_without_vision = ['deepseek-chat', 'deepseek-reasoner', 'llama-3.3-70b-versatile','deepseek-r1-distill-llama-70b']
 	if hasattr(llm, 'model') and llm.model in models_without_vision:
 		use_vision = False
 	elif hasattr(llm, 'model_name') and llm.model_name in models_without_vision:
