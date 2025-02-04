@@ -30,7 +30,8 @@ dependencies = [
     "playwright>=1.49.0",
     "setuptools>=75.8.0",
     "lmnr[langchain]>=0.4.53",
-    "markdownify==0.14.1"
+    "markdownify==0.14.1",
+    "pre-commit>=4.1.0",
 ]
 
 [project.optional-dependencies]
@@ -44,13 +45,20 @@ dev = [
 
 [tool.ruff]
 line-length = 130
+
+[tool.ruff.lint]
 select = ["E", "F", "I"]
-fix = true
+extend-ignore = ["E501"]
 
 [tool.ruff.format]
 quote-style = "single"
 indent-style = "tab"
 docstring-code-format = true
+
+[tool.black]
+line-length = 130
+target-version = ["py311"]
+skip-string-normalization = true
 
 [build-system]
 requires = ["hatchling"]
