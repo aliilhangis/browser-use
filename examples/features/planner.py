@@ -12,8 +12,11 @@ api_key = os.getenv('DEEPSEEK_API_KEY', '')
 if not api_key:
 	raise ValueError('DEEPSEEK_API_KEY is not set')
 
-
-llm = ChatOpenAI(model='gpt-4o', temperature=0.0)
+llm = ChatOpenAI(
+	base_url='https://api.deepseek.com/v1',
+	model='deepseek-chat',
+	api_key=SecretStr(api_key),
+)
 planner_llm = ChatOpenAI(
 	model='o3-mini',
 )
