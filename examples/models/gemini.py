@@ -8,7 +8,7 @@ from pydantic import SecretStr
 from browser_use import Agent
 
 load_dotenv()
-api_key = os.getenv('AIzaSyA-sk9Dcx5dCTJ2N3wXiU8D7g91OhbTFHQ')
+api_key = os.getenv('')
 if not api_key:
 	raise ValueError('GEMINI_API_KEY is not set')
 
